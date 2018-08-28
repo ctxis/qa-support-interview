@@ -17,39 +17,26 @@ Adding comments describing any limitations or mostly-complete portions of the fu
 ## Server monitoring
 
 Context has a lot of servers, and successful logins to them are logged to a central service. This 
-service outputs the **last successful login for each user on the server**, a sample of which can be [found in 
-data/logins.csv](data/logins.csv).
+service outputs the **last successful login for each user on the server**. This output is uploaded to
+another service which parses the file.
 
-### logins.csv
-
-The logins.CSV is a snapshot of the output of the hypothetical central login service. Unfortunately the
-CSV file contains some abnormalities that you need to clean up while processing, which are described below.
-
-The following headers are present in the CSV file:
-
-`server-name,server-ip,username,full-name,contact,login-time`
-
-An example row would be:
-
-`foster-chapman,3.82.209.138,amiller,Alex Taylor,+44(0)0705 97317,2017-06-19`
-
-The `server-name` and/or `contact` column is sometimes missing from rows in the output. You can 
-choose to ignore these rows, or attempt to fill in the missing information, as long as you justify 
-your choice.
-
-Each login has an individual row in the CSV. **However**, if the user that has logged in has multiple 
-items of contact information associated with their account, then there will be multiple rows per login.
-
-For example, "Alex Taylor" has an email address and a phone number. Therefore, a single login attempt 
-will have two lines in the CSV file:
+The upload service can be used only from members of the `Admin` group. The service also has another
+group which is called `User`. The file can be one of the following types:
 
 ```
-foster-chapman,3.82.209.138,amiller,Alex Taylor,+44(0)0705 97317,2017-06-19
-foster-chapman,3.82.209.138,amiller,Alex Taylor,alex@test.com,2017-06-19
+CONTENT_TYPES = [
+    'text/plain',
+    'text/richtext',
+    'application/rtf',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'application/pdf',
+    'application/msword',
+    'application/excel',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]
 ```
-
-The Django application should treat multiple lines like this as a single login attempt. At a minimum, the 
-system should store one piece of contact information per user. 
-
-**Bonus points:** If users have multiple contacts, store all values that the CSV provides.
 
